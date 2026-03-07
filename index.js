@@ -171,7 +171,7 @@ async function run() {
 
                 if (skipRecentArtifact) {
                   console.log(
-                    `Skipping recent artifact (id: ${artifact.id}, name: ${artifact.name}).`
+                    `Skipping recent artifact (id: ${artifact.id}, name: ${artifact.name}), size_in_bytes: ${artifact.size_in_bytes}).`
                   );
 
                   skippedArtifactsCounter += 1;
@@ -187,7 +187,7 @@ async function run() {
                 if (devEnv) {
                   return new Promise(resolve => {
                     console.log(
-                      `Recognized development environment, preventing artifact (id: ${artifact.id}, name: ${artifact.name}) from being removed.`
+                      `Recognized development environment, preventing artifact (id: ${artifact.id}, name: ${artifact.name}, size_in_bytes: ${artifact.size_in_bytes}) from being removed.`
                     );
 
                     resolve();
@@ -201,7 +201,7 @@ async function run() {
                   })
                   .then(() => {
                     console.log(
-                      `Successfully removed artifact (id: ${artifact.id}, name: ${artifact.name}).`
+                      `Successfully removed artifact (id: ${artifact.id}, name: ${artifact.name}, size_in_bytes: ${artifact.size_in_bytes}).`
                     );
                   });
               })
