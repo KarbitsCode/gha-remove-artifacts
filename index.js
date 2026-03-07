@@ -1,6 +1,7 @@
 const core = require("@actions/core");
 const { Octokit } = require("@octokit/action");
 const { throttling } = require("@octokit/plugin-throttling");
+const { retry } = require("@octokit/plugin-retry");
 const moment = require("moment");
 const yn = require("yn");
 
@@ -64,7 +65,7 @@ function getConfigs() {
   };
 }
 
-const ThrottledOctokit = Octokit.plugin(throttling);
+const ThrottledOctokit = Octokit.plugin(throttling, retry);
 
 async function run() {
   const configs = getConfigs();
