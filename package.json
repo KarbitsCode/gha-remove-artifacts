@@ -4,7 +4,7 @@
   "description": "GitHub Action to remove old artifacts",
   "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build index.js --minify",
+    "build": "set NODE_OPTIONS=--openssl-legacy-provider && ncc build index.js --minify",
     "dev": "cross-env NODE_ENV=dev node ./index.js",
     "test": "echo 'No test framework configured'",
     "lint": "eslint . --no-error-on-unmatched-pattern",
@@ -26,6 +26,7 @@
   "dependencies": {
     "@actions/core": "^1.2.2",
     "@octokit/action": "^2.0.0",
+    "@octokit/plugin-retry": "^6.0.1",
     "@octokit/plugin-throttling": "^3.2.0",
     "moment": "^2.24.0",
     "yn": "^4.0.0"
