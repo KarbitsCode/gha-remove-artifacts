@@ -1,0 +1,13 @@
+diff --git a/node_modules/@octokit/plugin-retry/dist-node/index.js b/node_modules/@octokit/plugin-retry/dist-node/index.js
+index 8291d72..8753a84 100644
+--- a/node_modules/@octokit/plugin-retry/dist-node/index.js
++++ b/node_modules/@octokit/plugin-retry/dist-node/index.js
+@@ -34,7 +34,7 @@ __export(dist_src_exports, {
+   retry: () => retry
+ });
+ module.exports = __toCommonJS(dist_src_exports);
+-var import_core = require("@octokit/core");
++// var import_core = require("@octokit/core");
+ 
+ // pkg/dist-src/error-request.js
+ async function errorRequest(state, octokit, error, options) {
