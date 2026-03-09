@@ -172,13 +172,9 @@ async function run() {
 
                 if (skipRecentArtifact) {
                   console.log(
-                    `Skipping recent artifact (id: ${
-                      artifact.id
-                    }, name: ${
+                    `Skipping recent artifact (id: ${artifact.id}, name: ${
                       artifact.name
-                    }, size: ${
-                      filesize(artifact.size_in_bytes)
-                    }).`
+                    }, size: ${filesize(artifact.size_in_bytes)}).`
                   );
 
                   skippedArtifactsCounter += 1;
@@ -196,11 +192,9 @@ async function run() {
                     console.log(
                       `Recognized development environment, preventing artifact (id: ${
                         artifact.id
-                      }, name: ${
-                        artifact.name
-                      }, size: ${
-                        filesize(artifact.size_in_bytes)
-                      }) from being removed.`
+                      }, name: ${artifact.name}, size: ${filesize(
+                        artifact.size_in_bytes
+                      )}) from being removed.`
                     );
 
                     resolve();
@@ -216,11 +210,9 @@ async function run() {
                     console.log(
                       `Successfully removed artifact (id: ${
                         artifact.id
-                      }, name: ${
-                        artifact.name
-                      }, size: ${
-                        filesize(artifact.size_in_bytes)
-                      }).`
+                      }, name: ${artifact.name}, size: ${filesize(
+                        artifact.size_in_bytes
+                      )}).`
                     );
                   });
               })
