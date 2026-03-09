@@ -2,6 +2,7 @@ const core = require("@actions/core");
 const { Octokit } = require("@octokit/action");
 const { throttling } = require("@octokit/plugin-throttling");
 const { retry } = require("@octokit/plugin-retry");
+const { filesize } = require("filesize");
 const moment = require("moment");
 const yn = require("yn");
 
@@ -171,7 +172,13 @@ async function run() {
 
                 if (skipRecentArtifact) {
                   console.log(
-                    `Skipping recent artifact (id: ${artifact.id}, name: ${artifact.name}), size_in_bytes: ${artifact.size_in_bytes}).`
+                    `Skipping recent artifact (id: ${
+                      artifact.id
+                    }, name: ${
+                      artifact.name
+                    }, size: ${
+                      filesize(artifact.size_in_bytes)
+                    }).`
                   );
 
                   skippedArtifactsCounter += 1;
@@ -187,7 +194,13 @@ async function run() {
                 if (devEnv) {
                   return new Promise(resolve => {
                     console.log(
-                      `Recognized development environment, preventing artifact (id: ${artifact.id}, name: ${artifact.name}, size_in_bytes: ${artifact.size_in_bytes}) from being removed.`
+                      `Recognized development environment, preventing artifact (id: ${
+                        artifact.id
+                      }, name: ${
+                        artifact.name
+                      }, size: ${
+                        filesize(artifact.size_in_bytes)
+                      }) from being removed.`
                     );
 
                     resolve();
@@ -201,7 +214,13 @@ async function run() {
                   })
                   .then(() => {
                     console.log(
-                      `Successfully removed artifact (id: ${artifact.id}, name: ${artifact.name}, size_in_bytes: ${artifact.size_in_bytes}).`
+                      `Successfully removed artifact (id: ${
+                        artifact.id
+                      }, name: ${
+                        artifact.name
+                      }, size: ${
+                        filesize(artifact.size_in_bytes)
+                      }).`
                     );
                   });
               })

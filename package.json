@@ -28,6 +28,7 @@
     "@octokit/action": "^2.0.2",
     "@octokit/plugin-retry": "^6.0.1",
     "@octokit/plugin-throttling": "^3.2.0",
+    "filesize": "^11.0.13",
     "moment": "^2.24.0",
     "yn": "^4.0.0"
   },
