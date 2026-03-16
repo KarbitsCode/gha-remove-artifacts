@@ -81,7 +81,7 @@ async function run() {
 
         return configs.retriesEnabled;
       },
-      onAbuseLimit: (retryAfter, options) => {
+      onSecondaryRateLimit: (retryAfter, options) => {
         console.error(
           `Abuse detected for request ${options.method} ${options.url}, retry count: ${options.request.retryCount}`
         );
@@ -94,13 +94,15 @@ async function run() {
   });
 
   async function getTaggedCommits() {
-    const listTagsRequest = octokit.repos.listTags.endpoint.merge({
-      ...configs.repo,
-      per_page: configs.pagination.perPage,
-      ref: "tags",
-    });
+    const listTagsRequest = [
+      octokit.rest.repos.listTags,
+      {
+        ...configs.repo,
+        per_page: configs.pagination.perPage,
+      },
+    ];
 
-    const tags = await octokit.paginate(listTagsRequest);
+    const tags = await octokit.paginate(listTagsRequest[0], listTagsRequest[1]);
 
     return tags.map(tag => tag.commit.sha);
   }
@@ -117,17 +119,18 @@ async function run() {
     }
   }
 
-  const workflowRunsRequest = octokit.actions.listRepoWorkflowRuns.endpoint.merge(
+  const workflowRunsRequest = [
+    octokit.rest.actions.listWorkflowRunsForRepo,
     {
       ...configs.repo,
       per_page: configs.pagination.perPage,
-    }
-  );
+    },
+  ];
 
   let skippedArtifactsCounter = 0;
 
-  return octokit
-    .paginate(workflowRunsRequest, ({ data }, done) => {
+  // prettier-ignore
+  return octokit.paginate(workflowRunsRequest[0], workflowRunsRequest[1], ({ data }, done) => {
       const stopPagination = data.find(workflowRun => {
         const createdAt = moment(workflowRun.created_at);
 
@@ -143,8 +146,7 @@ async function run() {
     .then(workflowRuns => {
       const artifactPromises = workflowRuns
         .filter(workflowRun => {
-          const skipTaggedWorkflow =
-            configs.skipTags && taggedCommits.includes(workflowRun.head_sha);
+          const skipTaggedWorkflow = configs.skipTags && taggedCommits.includes(workflowRun.head_sha);
 
           if (skipTaggedWorkflow) {
             console.log(`Skipping tagged run ${workflowRun.head_sha}`);
@@ -155,26 +157,28 @@ async function run() {
           return true;
         })
         .map(workflowRun => {
-          const workflowRunArtifactsRequest = octokit.actions.listWorkflowRunArtifacts.endpoint.merge(
+          const workflowRunArtifactsRequest = [
+            octokit.rest.actions.listWorkflowRunArtifacts,
             {
               ...configs.repo,
               per_page: configs.pagination.perPage,
               run_id: workflowRun.id,
-            }
-          );
+            },
+          ];
 
-          return octokit.paginate(workflowRunArtifactsRequest).then(artifacts =>
-            artifacts
-              .filter(artifact => {
-                const skipRecentArtifact =
-                  configs.skipRecent &&
-                  configs.skipRecent > skippedArtifactsCounter;
+          return octokit.paginate(workflowRunArtifactsRequest[0], workflowRunArtifactsRequest[1]).then(artifacts =>
+            artifacts.filter(artifact => {
+                const skipRecentArtifact = configs.skipRecent && configs.skipRecent > skippedArtifactsCounter;
 
                 if (skipRecentArtifact) {
                   console.log(
-                    `Skipping recent artifact (id: ${artifact.id}, name: ${
+                    `Skipping recent artifact (id: ${
+                      artifact.id
+                    }, name: ${
                       artifact.name
-                    }, size: ${filesize(artifact.size_in_bytes)}).`
+                    }, size: ${
+                      filesize(artifact.size_in_bytes)
+                    }).`
                   );
 
                   skippedArtifactsCounter += 1;
@@ -192,17 +196,18 @@ async function run() {
                     console.log(
                       `Recognized development environment, preventing artifact (id: ${
                         artifact.id
-                      }, name: ${artifact.name}, size: ${filesize(
-                        artifact.size_in_bytes
-                      )}) from being removed.`
+                      }, name: ${
+                        artifact.name
+                      }, size: ${
+                        filesize(artifact.size_in_bytes)
+                      }) from being removed.`
                     );
 
                     resolve();
                   });
                 }
 
-                return octokit.actions
-                  .deleteArtifact({
+                return octokit.actions.deleteArtifact({
                     ...configs.repo,
                     artifact_id: artifact.id,
                   })
@@ -210,9 +215,11 @@ async function run() {
                     console.log(
                       `Successfully removed artifact (id: ${
                         artifact.id
-                      }, name: ${artifact.name}, size: ${filesize(
-                        artifact.size_in_bytes
-                      )}).`
+                      }, name: ${
+                        artifact.name
+                      }, size: ${
+                        filesize(artifact.size_in_bytes)
+                      }).`
                     );
                   });
               })
