@@ -43,8 +43,10 @@ function getConfigs() {
 
   const skipRecent = readInput(inputKeys.SKIP_RECENT);
 
+  let parsedRecent = 0;
+
   if (skipRecent) {
-    const parsedRecent = Number(skipRecent);
+    parsedRecent = Number(skipRecent);
 
     if (Number.isNaN(parsedRecent)) {
       throw new Error("skip-recent option must be type of number.");
@@ -61,7 +63,7 @@ function getConfigs() {
     },
     maxAge: moment().subtract(age, units),
     skipTags: yn(readInput(inputKeys.SKIP_TAGS)),
-    skipRecent: Number(skipRecent),
+    skipRecent: parsedRecent,
     retriesEnabled: true,
   };
 }
